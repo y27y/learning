@@ -1,7 +1,7 @@
 # markdown
 1. a
     1. b
-        - [ ] list1
+        - [] list1
         - [ ] list2
 2. aa
 3. ==test==
@@ -38,12 +38,12 @@ markdown联系我：[发送邮件](mailto:example@email.com)
 - 这是一个链接[bangumi](https://bgm.tv "bangumi nb")
 - 文字[bgm][bgm]
   
-妖梦可爱[![yoomu](./../yoomu.png "可爱")](https://bilibili.com)
+妖梦可爱[![yoomu](./yoomu.png "可爱")](https://bilibili.com)
 
-<img src = "./../kei.jpg" alt = "" width = "50%">
+<img src = "./kei.jpg" alt = "" width = "50%">
 ***
 <div align = "center">
-<img src = "./../1.jpg" alt = ":)" width = "30%">
+<img src = "./1.jpg" alt = ":)" width = "30%">
 </div>
 
 ![bgmsrc](https://digitalpaper.stdaily.com/http_www.kjrb.com/kjwzb/images/2013-05/23/06/1612-6b001.jpg)

@@ -1,9 +1,8 @@
-#include<iostream>
+#include <iostream>
 
-
-class Tree{
+template <typename T> class Tree {
 private:
-    struct TreeNode{
+    struct TreeNode {
         int data;
         TreeNode* left;
         TreeNode* right;
@@ -13,9 +12,6 @@ private:
     int sz;
 
 public:
-    
 };
 
-int main(){
-
-}
+int main() {}
