@@ -1,10 +1,8 @@
 #include<iostream>
 #include<stdexcept>
-#include<forward_list>
-#include<list>
+#include <list.hpp>
 
-
-class mylist{//0--n
+class my_list{//0--n
 private:
     struct Node{
         int data;
@@ -206,7 +204,7 @@ public:
 
 int main(){
 
-    mylist l;
+    my_list l;
 
 //     l.push_back(114);
 //     l.push_back(514);

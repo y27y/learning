@@ -4,6 +4,13 @@
 #include <unordered_set>
 // #include "head\tree.hpp"
 
+/*
+悟道：
+    先序 = 不管处理，看到就输出，输出完处理子树
+    中序 = 处理完左子树就输出，再处理右子树
+    后序 = 处理完左右子树再输出
+*/
+
 struct node {
     int data;
     node* left;
@@ -99,7 +106,7 @@ void traverse_with_stack_3_1(node* root) { // 后序，两个栈
             s1.push(cur->left);
         }
         if (cur->right != nullptr) {
-            s1.push(cur->right) ;
+            s1.push(cur->right);
         }
     }
 
@@ -110,13 +117,28 @@ void traverse_with_stack_3_1(node* root) { // 后序，两个栈
 }
 
 void traverse_with_stack_3_2(node* root) { // 后序，一个栈
-    if(root == nullptr){
+    if (root == nullptr) {
         return;
     }
     std::stack<node*> s;
-    while(!s.empty()){
-        
+    node* h = root;
+    node* cur = root;
+    s.push(root);
+    while (!s.empty()) {
+        cur = s.top();
+        if (cur->left != nullptr && h != cur->left && h != cur->right) {
+            s.push(cur->left);
+        } // 有左子树，左右子树都未处理
+        else if (cur->right != nullptr && h != cur->right) {
+            s.push(cur->right);
+        } // 有右子树，右子树未处理
+        else {
+            std::cout << cur->data << " ";
+            h = s.top();
+            s.pop();
+        } // 左右子树都没有，或者都处理了
     }
+    return;
 }
 
 void traverse(node* root) {
@@ -147,6 +169,8 @@ int main() {
     traverse(root);
     std::cout << std::endl;
     traverse_with_stack_3_1(root);
+    std::cout << std::endl;
+    traverse_with_stack_3_2(root);
 }
 
 /*
