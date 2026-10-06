@@ -2,7 +2,6 @@ import torch
 import torchvision
 from torch.utils import data
 from torchvision import transforms
-from IPython import display
 import Animate
 from d2l import torch as d2l
 # trans = transforms.ToTensor()
@@ -24,8 +23,6 @@ class Accumulator: #@save
     def __getitem__(self, idx):
         return self.data[idx]
 
-
-    
 def get_fashion_mnist_labels(labels): 
     text_labels = ['t-shirt', 'trouser', 'pullover', 'dress', 'coat',
                 'sandal', 'shirt', 'sneaker', 'bag', 'ankle boot']
@@ -46,7 +43,7 @@ def load_data_fashion_mnist(batch_size, resize=None):
     mnist_train = torchvision.datasets.FashionMNIST(root="../data", train = True, transform = trans, download = True)
     mnist_test = torchvision.datasets.FashionMNIST(root="../data", train = False, transform = trans, download = True)
     train_iter = data.DataLoader(dataset = mnist_train, batch_size = batch_size, shuffle = True, num_workers = 4)
-    test_iter = data.DataLoader(dataset = mnist_test, batch_size = batch_size, shuffle = True, num_workers = 4)
+    test_iter = data.DataLoader(dataset = mnist_test, batch_size = batch_size, shuffle = False, num_workers = 4)
 
     return (train_iter, test_iter)
 
@@ -69,7 +66,7 @@ def Net(X):
 def Cross_entropy(y_hat, y):
     return- torch.log(y_hat[range(len(y_hat)), y])
 
-def sgd(params : torch.Tensor, lr, batch_size):
+def sgd(params, lr, batch_size): # ??????????
     with torch.no_grad():
         for param in params:
             param -= lr / batch_size * param.grad

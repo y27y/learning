@@ -8,6 +8,7 @@
 //--------------
 #include <iterator>
 #include <numeric>
+#include <memory>
 using namespace std;
 const char* cp("Hello World!");
 
@@ -25,11 +26,19 @@ void test_function() {
 
 int main() {
     // int (*ADD)(int a, int b) = add;
-    vector<int> v = {1, 2, 3, 4};
-    ostream_iterator<int> out_iter(cout);
-    copy(v.cbegin(), v.cend(), out_iter);
-    cout << endl;
-    cout;
+    allocator<string> alloc;
+    auto ptr = alloc.allocate(42);
+    alloc.construct(ptr, "string");
+    
+    cout << *ptr ;
+
+    //___________________________________
+    // vector<int> v = {1, 2, 3, 4};
+    // ostream_iterator<int> out_iter(cout);
+    // copy(v.cbegin(), v.cend(), out_iter);
+    // cout << endl;
+    // cout;
+    //————————————————————————————————
     // istream_iterator<int> in(cin), eof;
     // cout << accumulate(in, eof, 0, ADD);
     // while (in != eof) {
