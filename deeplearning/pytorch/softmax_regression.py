@@ -34,8 +34,7 @@ def get_fashion_mnist_labels(labels):
 # train_iter = data.DataLoader(dataset = mnist_train, batch_size = batch_size, shuffle = True, num_workers = 4)
 
 
-def load_data_fashion_mnist(batch_size, resize=None):
-    """下载Fashion-MNIST数据集，然后将其加载到内存中"""
+def load_data_fashion_mnist(batch_size, resize=None):# 下载Fashion-MNIST数据集，然后将其加载到内存中
     trans = [transforms.ToTensor()]
     if resize:
         trans.insert(0, transforms.Resize(resize))
@@ -47,6 +46,7 @@ def load_data_fashion_mnist(batch_size, resize=None):
 
     return (train_iter, test_iter)
 
+# 基本参数
 num_inputs = 784
 num_outputs = 10
 lr = 0.1
@@ -61,16 +61,19 @@ def softmax(X : torch.Tensor):
     return X_exp / partition
 
 def Net(X):
-    return softmax(torch.matmul(X.reshape((-1, W.shape[0])), W) + b)
+    return softmax(torch.matmul(X.reshape((-1, W.shape[0])), W) + b) # (n, 784) * (784, 10) 在softmax后得到(n, 10)的对应10个概率权重
 
 def Cross_entropy(y_hat, y):
-    return- torch.log(y_hat[range(len(y_hat)), y])
+    return -torch.log(y_hat[range(len(y_hat)), y])
 
-def sgd(params, lr, batch_size): # ??????????
+def sgd(params, lr, batch_size): # 梯度下降
     with torch.no_grad():
         for param in params:
             param -= lr / batch_size * param.grad
             param.grad.zero_()
+
+def Updater(batch_size): # 用sgd随机梯度下降，在每个batch后更新权重数据
+    return sgd([W, b], lr, batch_size)
 
 def accuracy(y_hat : torch.Tensor, y : torch.Tensor):
     if len(y_hat) > 1 and len(y) > 1:
@@ -88,11 +91,7 @@ def evaluate_accuracy(net, data_iter): #@save
             metric.add(accuracy(net(X), y), y.numel())
     return metric[0] / metric[1]
 
-def Updater(batch_size):
-    return sgd([W, b], lr, batch_size)
-
-def train_epoch_ch3(net, train_iter, loss, updater):  #@save
-    """训练模型一个迭代周期（定义见第3章）"""
+def train_epoch_ch3(net, train_iter, loss, updater):
     # 将模型设置为训练模式
     if isinstance(net, torch.nn.Module):
         net.train()
@@ -140,8 +139,9 @@ def predict_ch3(net, test_iter, n=6):  #@save
 
 train_iter, test_iter = load_data_fashion_mnist(batch_size = batch_size)
 net = Net
-cross_entropy = Cross_entropy
+loss = Cross_entropy
 updater = Updater
-train_ch3(net, train_iter, test_iter, cross_entropy, num_epochs, updater)
+train_ch3(net, train_iter, test_iter, loss, num_epochs, updater)
 predict_ch3(net, test_iter)
 
+torch.save(W, '1.txt')
