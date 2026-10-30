@@ -1,6 +1,6 @@
 from d2l import torch as d2l
 import torch
-import Animate
+import deeplearning.Animate as Animate
 
 def accuracy(y_hat : torch.Tensor, y : torch.Tensor):
     if len(y_hat) > 1 and len(y) > 1:

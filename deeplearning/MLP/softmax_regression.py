@@ -122,6 +122,7 @@ def train_ch3(net, train_iter, test_iter, loss, num_epochs, updater):
         test_acc = evaluate_accuracy(net, test_iter)
         animator.add(epoch + 1, train_metrics + (test_acc,))
     train_loss, train_acc = train_metrics
+    return (train_loss, train_acc)
     assert train_loss < 0.5, train_loss
     assert train_acc <= 1 and train_acc > 0.7, train_acc
     assert test_acc <= 1 and test_acc > 0.7, test_acc
@@ -141,7 +142,6 @@ train_iter, test_iter = load_data_fashion_mnist(batch_size = batch_size)
 net = Net
 loss = Cross_entropy
 updater = Updater
-train_ch3(net, train_iter, test_iter, loss, num_epochs, updater)
-predict_ch3(net, test_iter)
-
-torch.save(W, '1.txt')
+train_loss, train_acc = train_ch3(net, train_iter, test_iter, loss, num_epochs, updater)
+print(train_loss, train_acc)
+# predict_ch3(net, test_iter)
