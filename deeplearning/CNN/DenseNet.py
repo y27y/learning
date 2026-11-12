@@ -14,6 +14,9 @@ def transition_block(input_channels, num_channels):
         nn.AvgPool2d(kernel_size=2, stride=2))
 
 class DenseBlock(nn.Module):
+    ''' dense_block的每个conv_block卷积一次之后，
+    输出一个out_channel(在外面 == growth_rate)的通道
+    和原来的X在dim1上concat然后给下一个X(也就是更新自己)'''
     def __init__(self, num_convs, input_channels, out_channels):
         super(DenseBlock, self).__init__()
         layer = []
@@ -37,7 +40,7 @@ num_convs_in_dense_blocks = [4, 4, 4, 4]
 blks = []
 for i, num_convs in enumerate(num_convs_in_dense_blocks):
     blks.append(DenseBlock(num_convs, num_channels, growth_rate))
-    # 上一个稠密块的输出通道数
+    # 计算上一个稠密块的输出通道数，赋给下一个的input
     num_channels += num_convs * growth_rate
     # 在稠密块之间添加一个转换层，使通道数量减半
     if i != len(num_convs_in_dense_blocks) - 1:
