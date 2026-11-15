@@ -1,3 +1,8 @@
+#DenseNet
+'''
+net : conv 7 * 7 -> denseblock -> transition_block -> dense_block -> ....... Linear
+dense_block : conv -> concat -> conv -> ......
+'''
 import torch
 from d2l import torch as d2l
 import torch.nn as nn
@@ -57,3 +62,5 @@ net = nn.Sequential(
 
 
 lr, num_epochs, batch_size = 0.1, 10, 256
+train_iter, test_iter = d2l.load_data_fashion_mnist(batch_size, resize=96)
+d2l.train_ch6(net, train_iter, test_iter, num_epochs, lr, d2l.try_gpu())

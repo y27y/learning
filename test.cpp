@@ -7,8 +7,8 @@
 #include <vector>
 //--------------
 #include <iterator>
-#include <numeric>
 #include <memory>
+#include <numeric>
 using namespace std;
 const char* cp("Hello World!");
 
@@ -29,8 +29,8 @@ int main() {
     allocator<string> alloc;
     auto ptr = alloc.allocate(42);
     alloc.construct(ptr, "string");
-    
-    cout << *ptr ;
+
+    cout << *ptr;
 
     //___________________________________
     // vector<int> v = {1, 2, 3, 4};
@@ -38,7 +38,7 @@ int main() {
     // copy(v.cbegin(), v.cend(), out_iter);
     // cout << endl;
     // cout;
-    //————————————————————————————————
+    // ————————————————————————————————
     // istream_iterator<int> in(cin), eof;
     // cout << accumulate(in, eof, 0, ADD);
     // while (in != eof) {
