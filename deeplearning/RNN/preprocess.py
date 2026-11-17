@@ -75,7 +75,8 @@ def load_corpus_time_machine(max_tokens=-1):  #@save
     corpus = [vocab[token] for line in tokens for token in line]
     if max_tokens > 0:
         corpus = corpus[:max_tokens]
-    return corpus, vocab
+    return
+    corpus, vocab
 
 lines = read_time_machine()
 tokens = tokenize(lines)
