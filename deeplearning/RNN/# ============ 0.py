@@ -11,14 +11,6 @@ train_iter, vocab = d2l.load_data_time_machine(batch_size, num_steps)
                                                   # 时光机器按字符分词，词表大小 len(vocab)=28
 
 
-# ============ 1. 把整数索引变成 one-hot 向量 ============
-# 输入是索引，模型要的是向量，所以先 one-hot 成 (词表大小) 维的 0/1 向量
-F.one_hot(torch.tensor([0, 2]), len(vocab))       # 形状 (2, 28)：第 0 行第 0 位是 1，第 1 行第 2 位是 1
-
-X = torch.arange(10).reshape((2, 5))              # 造一个 (batch=2, num_steps=5) 的假输入
-F.one_hot(X.T, 28).shape                          # 先转置成 (5, 2) 再 one-hot → (5, 2, 28)
-                                                  # ★ 必须转置：RNN 要按"时间步"循环，
-                                                  #   第一维变成时间步，每次取出的 X 是 (batch, vocab)
 
 
 # ============ 2. 初始化参数 ============
@@ -87,16 +79,6 @@ class RNNModelScratch:
                                                   # 统一入口：新序列/新 batch 从这里拿初始状态
 
 
-num_hiddens = 512
-net = RNNModelScratch(len(vocab), num_hiddens, d2l.try_gpu(),
-                      get_params, init_rnn_state, rnn)
-
-state = net.begin_state(X.shape[0], d2l.try_gpu())    # X 是上面那个 (2,5) 的假输入 → state 是 (2,512)
-Y, new_state = net(X.to(d2l.try_gpu()), state)
-Y.shape, len(new_state), new_state[0].shape           # (10, 28) / 1 / (2, 512)
-                                                  # 10 = num_steps(5) × batch(2)：每个 (t, b) 一个 28 维输出
-
-
 # ============ 6. 预测：给定前缀，续写 ============
 def predict_ch8(prefix, num_preds, net, vocab, device):
     state = net.begin_state(batch_size=1, device=device)   # 只有 1 条序列
@@ -111,7 +93,7 @@ def predict_ch8(prefix, num_preds, net, vocab, device):
         outputs.append(int(y.argmax(dim=1).reshape(1)))   # ★ 贪心：取分数最大的那个词的索引
     return ''.join([vocab.idx_to_token[i] for i in outputs])   # 索引 → 字符 → 拼成字符串
 
-
+net = RNNModelScratch
 predict_ch8('time traveller ', 10, net, vocab, d2l.try_gpu())
                                                   # 此时参数是随机的，输出是乱码，属于正常现象
 
@@ -144,9 +126,9 @@ def train_epoch_ch8(net, train_iter, loss, updater, device, use_random_iter):
                 state.detach_()
             else:
                 for s in state:
-                    s.detach_()                    # ★ 切断计算图：不把上一 batch 的 BPTT 带进来
+                    s.detach_()                    # ★ 切断计算图：不把上一 batch 的 BPTT 带来
                                                   #   只保留数值，不回传梯度，否则显存/图会爆炸
-
+                                                  
         y = Y.T.reshape(-1)                        # Y: (32,35) → 转置 (35,32) → 拉平 (1120,)
                                                   # ★ 必须转置：让它和 y_hat 的"时间优先"行序一致
         X, y = X.to(device), y.to(device)
