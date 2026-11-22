@@ -169,7 +169,7 @@ def grad_clipping(net, theta):
         params = [p for p in net.parameters() if p.requires_grad]
     else:
         params = net.params
-    norm = torch.sqrt(torch.sum(torch.sum((p.grad ** 2)) for p in params))
+    norm = torch.sqrt(sum(torch.sum((p.grad ** 2)) for p in params))
     if norm > theta:
         for param in params:
             param.grad[ : ] *= theta / norm
@@ -195,10 +195,15 @@ def train_epoch_ch8(net, trainer_iter, loss, optimizer, device, use_random_iter)
         y_hat, state = net(X, state)
         l =  loss(y_hat, y).mean()
 
-        optimizer.zero_grad()
-        l.backward()
-        grad_clipping(net, 1)
-        optimizer.step()
+        if isinstance(optimizer, torch.optim.Optimizer):
+            optimizer.zero_grad()
+            l.backward()
+            grad_clipping(net, 1)
+            optimizer.step()
+        else:
+            l.backward()
+            grad_clipping(net, 1)
+            optimizer(batch_size = 1) # 用d2l的SGD
 
         metric.add(l * y.numel(), y.numel())
         return math.exp(metric[0] / metric[1]), metric[1] / timer.stop() # 返回了困惑度
@@ -207,7 +212,25 @@ def train_epoch_ch8(net, trainer_iter, loss, optimizer, device, use_random_iter)
 # ============ 9. 完整训练循环 ============
 def train_ch8(net, train_iter, vocab, lr, num_epochs, device, use_random_iter=False):
     loss = nn.CrossEntropyLoss()
-    optmizer = torch.optim.SGD(net.parameters(), lr = lr)
-    
+    animator = d2l.Animator(xlabel='epoch', ylabel='perplexity',
+                                legend=['train'], xlim=[10, num_epochs])
+    if isinstance(net, nn.Module):
+        optimizer = torch.optim.SGD(net.parameters(), lr)
+    else:
+        optimizer = lambda batch_size: d2l.sgd(net.params, lr, batch_size)
+    predict = lambda prefix: predict_ch8(prefix, 50, net, vocab, device)
 
-# 10. ruuuunn！
+    for epoch in range(num_epochs):
+        ppl, speed = train_epoch_ch8(net, train_iter, loss, optimizer, device, use_random_iter)
+        if (epoch + 1) % 10 == 0:
+                    print(predict('time traveller'))       # 观察生成质量随训练提升
+                    animator.add(epoch + 1, [ppl])
+
+    print(f'困惑度 {ppl:.1f}, {speed:.1f} 词元/秒 {str(device)}')
+    print(predict('time traveller'))
+    print(predict('traveller'))
+
+# 10. ruuuunn!
+num_epochs, lr = 500, 1
+
+train_ch8(net, train_iter, vocab, lr, num_epochs, d2l.try_gpu())
